@@ -15,7 +15,7 @@ import org.deeplearning4j.nn.weights.WeightInit;
 import org.deeplearning4j.optimize.api.IterationListener;
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener;
 import org.deeplearning4j.parallelism.ParallelWrapper;
-//import org.nd4j.jita.conf.CudaEnvironment;
+import org.nd4j.jita.conf.CudaEnvironment;
 import org.nd4j.linalg.activations.Activation;
 import org.nd4j.linalg.api.buffer.DataBuffer;
 import org.nd4j.linalg.api.buffer.util.DataTypeUtil;
@@ -62,17 +62,17 @@ public class GravesLSTMCharModellingExample {
 		// Initialization characters must all be in CharacterIterator.getMinimalCharacterSet() by default
 
         // temp workaround for backend initialization
-/*
-        CudaEnvironment.getInstance().getConfiguration()
+
+       // CudaEnvironment.getInstance().getConfiguration()
             // key option enabled
-            .allowMultiGPU(true)
+        //    .allowMultiGPU(true)
 
             // we're allowing larger memory caches
-            .setMaximumDeviceCache(2L * 1024L * 1024L * 1024L)
+       //     .setMaximumDeviceCache(2L * 1024L * 1024L * 1024L)
 
             // cross-device access is used for faster model averaging over pcie
-            .allowCrossDeviceAccess(true);
-*/
+         //   .allowCrossDeviceAccess(true);
+
 
 		Random rng = new Random(12345);
 

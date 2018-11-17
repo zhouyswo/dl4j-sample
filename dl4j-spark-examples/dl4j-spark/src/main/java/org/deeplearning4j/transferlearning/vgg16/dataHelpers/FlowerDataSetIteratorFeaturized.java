@@ -16,30 +16,30 @@ import java.io.IOException;
  */
 public class FlowerDataSetIteratorFeaturized {
 
-//    private static final Logger log = org.slf4j.LoggerFactory.getLogger(FlowerDataSetIteratorFeaturized.class);
-//    static String featureExtractorLayer = FeaturizedPreSave.featurizeExtractionLayer;
-//
-//    public static void setup(String featureExtractorLayerArg) {
-//        featureExtractorLayer = featureExtractorLayerArg;
-//    }
-//
-//    public static DataSetIterator trainIterator() throws UnsupportedKerasConfigurationException, IOException, InvalidKerasConfigurationException {
-//        runFeaturize();
-//        DataSetIterator existingTrainingData = new ExistingMiniBatchDataSetIterator(new File("trainFolder"),"flowers-"+featureExtractorLayer+"-train-%d.bin");
-//        DataSetIterator asyncTrainIter = new AsyncDataSetIterator(existingTrainingData);
-//        return asyncTrainIter;
-//    }
-//    public static DataSetIterator testIterator() {
-//        DataSetIterator existingTestData = new ExistingMiniBatchDataSetIterator(new File("testFolder"),"flowers-"+featureExtractorLayer+"-test-%d.bin");
-//        DataSetIterator asyncTestIter = new AsyncDataSetIterator(existingTestData);
-//        return asyncTestIter;
-//    }
-//
-//    private static void runFeaturize() throws InvalidKerasConfigurationException, IOException, UnsupportedKerasConfigurationException {
-//        File trainDir = new File("trainFolder","flowers-"+featureExtractorLayer+"-train-0.bin");
-//        if (!trainDir.isFile()) {
-//            log.info("\n\tFEATURIZED DATA NOT FOUND. \n\t\tRUNNING \"FeaturizedPreSave\" first to do presave of featurized data");
-//            FeaturizedPreSave.main(null);
-//        }
-//    }
+    private static final Logger log = org.slf4j.LoggerFactory.getLogger(FlowerDataSetIteratorFeaturized.class);
+    static String featureExtractorLayer = FeaturizedPreSave.featurizeExtractionLayer;
+
+    public static void setup(String featureExtractorLayerArg) {
+        featureExtractorLayer = featureExtractorLayerArg;
+    }
+
+    public static DataSetIterator trainIterator() throws UnsupportedKerasConfigurationException, IOException, InvalidKerasConfigurationException {
+        runFeaturize();
+        DataSetIterator existingTrainingData = new ExistingMiniBatchDataSetIterator(new File("trainFolder"),"flowers-"+featureExtractorLayer+"-train-%d.bin");
+        DataSetIterator asyncTrainIter = new AsyncDataSetIterator(existingTrainingData);
+        return asyncTrainIter;
+    }
+    public static DataSetIterator testIterator() {
+        DataSetIterator existingTestData = new ExistingMiniBatchDataSetIterator(new File("testFolder"),"flowers-"+featureExtractorLayer+"-test-%d.bin");
+        DataSetIterator asyncTestIter = new AsyncDataSetIterator(existingTestData);
+        return asyncTestIter;
+    }
+
+    private static void runFeaturize() throws InvalidKerasConfigurationException, IOException, UnsupportedKerasConfigurationException {
+        File trainDir = new File("trainFolder","flowers-"+featureExtractorLayer+"-train-0.bin");
+        if (!trainDir.isFile()) {
+            log.info("\n\tFEATURIZED DATA NOT FOUND. \n\t\tRUNNING \"FeaturizedPreSave\" first to do presave of featurized data");
+            FeaturizedPreSave.main(null);
+        }
+    }
 }

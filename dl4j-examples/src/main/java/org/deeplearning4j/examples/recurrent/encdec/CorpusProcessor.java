@@ -131,7 +131,7 @@ public class CorpusProcessor {
 
     /**
      * Converts an iterable sequence of words to a list of indices. This will
-     * never return {@code null} but may return an empty {@link java.util.List}.
+     * never return {@code null} but may return an empty {@link List}.
      *
      * @param words
      *            sequence of words

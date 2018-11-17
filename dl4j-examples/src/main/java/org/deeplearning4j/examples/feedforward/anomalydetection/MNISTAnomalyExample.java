@@ -57,11 +57,10 @@ public class MNISTAnomalyExample {
                 .layer(3, new OutputLayer.Builder().nIn(250).nOut(784)
                         .lossFunction(LossFunctions.LossFunction.MSE)
                         .build())
-                .pretrain(false).backprop(true)
                 .build();
 
         MultiLayerNetwork net = new MultiLayerNetwork(conf);
-        net.setListeners(Collections.singletonList((IterationListener) new ScoreIterationListener(1)));
+        net.setListeners(Collections.singletonList(new ScoreIterationListener(1)));
 
         //Load data and split into training and testing sets. 40000 train, 10000 test
         DataSetIterator iter = new MnistDataSetIterator(100,50000,false);
@@ -74,9 +73,9 @@ public class MNISTAnomalyExample {
         while(iter.hasNext()){
             DataSet ds = iter.next();
             SplitTestAndTrain split = ds.splitTestAndTrain(80, r);  //80/20 split (from miniBatch = 100)
-            featuresTrain.add(split.getTrain().getFeatureMatrix());
+            featuresTrain.add(split.getTrain().getFeatures());
             DataSet dsTest = split.getTest();
-            featuresTest.add(dsTest.getFeatureMatrix());
+            featuresTest.add(dsTest.getFeatures());
             INDArray indexes = Nd4j.argMax(dsTest.getLabels(),1); //Convert from one-hot representation -> index
             labelsTest.add(indexes);
         }

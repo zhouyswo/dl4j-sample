@@ -123,7 +123,6 @@ public class MnistImagePipelineExampleAddNeuralNet {
             .activation(Activation.SOFTMAX)
             .weightInit(WeightInit.XAVIER)
             .build())
-        .pretrain(false).backprop(true)
         .setInputType(InputType.convolutional(height, width, channels))
         .build();
 
@@ -166,7 +165,7 @@ public class MnistImagePipelineExampleAddNeuralNet {
     // Evaluate the network
     while (testIter.hasNext()) {
       DataSet next = testIter.next();
-      INDArray output = model.output(next.getFeatureMatrix());
+      INDArray output = model.output(next.getFeatures());
       // Compare the Feature Matrix from the model
       // with the labels from the RecordReader
       eval.eval(next.getLabels(), output);

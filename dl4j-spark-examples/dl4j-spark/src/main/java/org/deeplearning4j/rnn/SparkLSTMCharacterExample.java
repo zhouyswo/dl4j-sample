@@ -1,7 +1,7 @@
 package org.deeplearning4j.rnn;
 
 import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameter;
+//import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 import org.apache.commons.io.FileUtils;
 import org.apache.spark.SparkConf;
@@ -66,13 +66,12 @@ public class SparkLSTMCharacterExample {
     private static int nOut = CHAR_TO_INT.size();
     private static int exampleLength = 1000;                    //Length of each training example sequence to use
 
-    @Parameter(names = "-useSparkLocal", description = "Use spark local (helper for testing/running without spark submit)", arity = 1)
+//    @Parameter(names = "-useSparkLocal", description = "Use spark local (helper for testing/running without spark submit)", arity = 1)
     private boolean useSparkLocal = true;
-
-    @Parameter(names = "-batchSizePerWorker", description = "Number of examples to fit each worker with")
+    //   @Parameter(names = "-batchSizePerWorker", description = "Number of examples to fit each worker with")
     private int batchSizePerWorker = 8;   //How many examples should be used per worker (executor) when fitting?
 
-    @Parameter(names = "-numEpochs", description = "Number of epochs for training")
+//    @Parameter(names = "-numEpochs", description = "Number of epochs for training")
     private int numEpochs = 1;
 
     public static void main(String[] args) throws Exception {
@@ -147,7 +146,7 @@ public class SparkLSTMCharacterExample {
             .batchSizePerWorker(batchSizePerWorker)
             .build();
         SparkDl4jMultiLayer sparkNetwork = new SparkDl4jMultiLayer(sc, conf, tm);
-        sparkNetwork.setListeners(Collections.<IterationListener>singletonList(new ScoreIterationListener(1)));
+        //sparkNetwork.setListeners(Collections.<IterationListener>singletonList(new ScoreIterationListener(1)));
 
         //Do training, and then generate and print samples from network
         for (int i = 0; i < numEpochs; i++) {
@@ -301,7 +300,7 @@ public class SparkLSTMCharacterExample {
         //Sampling is done in parallel here
         net.rnnClearPreviousState();
         INDArray output = net.rnnTimeStep(initializationInput);
-        output = output.tensorAlongDimension(output.size(2) - 1, 1, 0);    //Gets the last time step output
+        output = output.tensorAlongDimension(Integer.parseInt((output.size(2) - 1)+""), 1, 0);    //Gets the last time step output
 
         for (int i = 0; i < charactersToSample; i++) {
             //Set up next input (single time step) by sampling from previous output

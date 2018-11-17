@@ -18,6 +18,7 @@ import org.nd4j.linalg.dataset.DataSet;
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator;
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.learning.config.Nesterovs;
+import org.nd4j.linalg.util.ArrayUtil;
 
 import java.util.*;
 
@@ -70,7 +71,7 @@ public class CustomLossExample {
             .layer(1, new OutputLayer.Builder(new CustomLossL1L2())
                 .activation(Activation.IDENTITY)
                 .nIn(nHidden).nOut(numOutputs).build())
-            .pretrain(false).backprop(true).build()
+            .build()
         );
         net.init();
         net.setListeners(new ScoreIterationListener(100));
@@ -129,7 +130,7 @@ public class CustomLossExample {
                 INDArray grad = lossfn.computeGradient(label,preOut,activation,null);
                 NdIndexIterator iterPreOut = new NdIndexIterator(preOut.shape());
                 while (iterPreOut.hasNext()) {
-                    int[] next = iterPreOut.next();
+                    int[] next = ArrayUtil.toInts(iterPreOut.next());
                     //checking gradient with total score wrt to each output feature in label
                     double before = preOut.getDouble(next);
                     preOut.putScalar(next, before + epsilon);

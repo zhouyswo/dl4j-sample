@@ -10,7 +10,7 @@ import org.deeplearning4j.nn.conf.GradientNormalization;
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
 import org.deeplearning4j.nn.conf.WorkspaceMode;
-import org.deeplearning4j.nn.conf.layers.GravesLSTM;
+import org.deeplearning4j.nn.conf.layers.LSTM;
 import org.deeplearning4j.nn.conf.layers.RnnOutputLayer;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.nn.weights.WeightInit;
@@ -77,17 +77,16 @@ public class Word2VecSentimentRNN {
         //Set up network configuration
         MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder()
             .seed(seed)
-            .updater(new Adam(2e-2))
+            .updater(new Adam(5e-3))
             .l2(1e-5)
             .weightInit(WeightInit.XAVIER)
             .gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue).gradientNormalizationThreshold(1.0)
-            .trainingWorkspaceMode(WorkspaceMode.SEPARATE).inferenceWorkspaceMode(WorkspaceMode.SEPARATE)   //https://deeplearning4j.org/workspaces
             .list()
-            .layer(0, new GravesLSTM.Builder().nIn(vectorSize).nOut(256)
+            .layer(0, new LSTM.Builder().nIn(vectorSize).nOut(256)
                 .activation(Activation.TANH).build())
             .layer(1, new RnnOutputLayer.Builder().activation(Activation.SOFTMAX)
                 .lossFunction(LossFunctions.LossFunction.MCXENT).nIn(256).nOut(2).build())
-            .pretrain(false).backprop(true).build();
+            .build();
 
         MultiLayerNetwork net = new MultiLayerNetwork(conf);
         net.init();
@@ -115,7 +114,7 @@ public class Word2VecSentimentRNN {
 
         INDArray features = test.loadFeaturesFromString(firstPositiveReview, truncateReviewsToLength);
         INDArray networkOutput = net.output(features);
-        int timeSeriesLength = networkOutput.size(2);
+        long timeSeriesLength = networkOutput.size(2);
         INDArray probabilitiesAtLastWord = networkOutput.get(NDArrayIndex.point(0), NDArrayIndex.all(), NDArrayIndex.point(timeSeriesLength - 1));
 
         System.out.println("\n\n-------------------------------");

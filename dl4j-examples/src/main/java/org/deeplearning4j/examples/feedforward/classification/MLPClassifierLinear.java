@@ -72,9 +72,9 @@ public class MLPClassifierLinear {
                         .build())
                 .layer(1, new OutputLayer.Builder(LossFunction.NEGATIVELOGLIKELIHOOD)
                         .weightInit(WeightInit.XAVIER)
-                        .activation(Activation.SOFTMAX).weightInit(WeightInit.XAVIER)
+                        .activation(Activation.SOFTMAX)
                         .nIn(numHiddenNodes).nOut(numOutputs).build())
-                .pretrain(false).backprop(true).build();
+                .build();
 
 
         MultiLayerNetwork model = new MultiLayerNetwork(conf);
@@ -90,7 +90,7 @@ public class MLPClassifierLinear {
         Evaluation eval = new Evaluation(numOutputs);
         while(testIter.hasNext()){
             DataSet t = testIter.next();
-            INDArray features = t.getFeatureMatrix();
+            INDArray features = t.getFeatures();
             INDArray lables = t.getLabels();
             INDArray predicted = model.output(features,false);
 

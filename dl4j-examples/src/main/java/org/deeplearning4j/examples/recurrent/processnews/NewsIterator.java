@@ -103,7 +103,7 @@ public class NewsIterator implements DataSetIterator {
         List<String> news = new ArrayList<>(num);
         int[] category = new int[num];
 
-        for (int i = 0; i < num && cursor < totalExamples(); i++) {
+        for (int i = 0; i < num && cursor < this.totalNews; i++) {
             if (currCategory < categoryData.size()) {
                 news.add(this.categoryData.get(currCategory).getValue().get(newsPosition));
                 category[i] = Integer.parseInt(this.categoryData.get(currCategory).getKey().split(",")[0]);
@@ -239,12 +239,6 @@ public class NewsIterator implements DataSetIterator {
         }
     }
 
-
-    @Override
-    public int totalExamples() {
-        return this.totalNews;
-    }
-
     @Override
     public int inputColumns() {
         return vectorSize;
@@ -277,16 +271,6 @@ public class NewsIterator implements DataSetIterator {
     }
 
     @Override
-    public int cursor() {
-        return cursor;
-    }
-
-    @Override
-    public int numExamples() {
-        return totalExamples();
-    }
-
-    @Override
     public void setPreProcessor(DataSetPreProcessor preProcessor) {
         throw new UnsupportedOperationException();
     }
@@ -298,7 +282,7 @@ public class NewsIterator implements DataSetIterator {
 
     @Override
     public boolean hasNext() {
-        return cursor < numExamples();
+        return cursor < this.totalNews;
     }
 
     @Override
@@ -331,32 +315,32 @@ public class NewsIterator implements DataSetIterator {
         Builder() {
         }
 
-        public NewsIterator.Builder dataDirectory(String dataDirectory) {
+        public Builder dataDirectory(String dataDirectory) {
             this.dataDirectory = dataDirectory;
             return this;
         }
 
-        public NewsIterator.Builder wordVectors(WordVectors wordVectors) {
+        public Builder wordVectors(WordVectors wordVectors) {
             this.wordVectors = wordVectors;
             return this;
         }
 
-        public NewsIterator.Builder batchSize(int batchSize) {
+        public Builder batchSize(int batchSize) {
             this.batchSize = batchSize;
             return this;
         }
 
-        public NewsIterator.Builder truncateLength(int truncateLength) {
+        public Builder truncateLength(int truncateLength) {
             this.truncateLength = truncateLength;
             return this;
         }
 
-        public NewsIterator.Builder train(boolean train) {
+        public Builder train(boolean train) {
             this.train = train;
             return this;
         }
 
-        public NewsIterator.Builder tokenizerFactory(TokenizerFactory tokenizerFactory) {
+        public Builder tokenizerFactory(TokenizerFactory tokenizerFactory) {
             this.tokenizerFactory = tokenizerFactory;
             return this;
         }

@@ -153,7 +153,6 @@ public class SentimentExampleIterator implements DataSetIterator {
         return new DataSet(features,labels,featuresMask,labelsMask);
     }
 
-    @Override
     public int totalExamples() {
         return positiveFiles.length + negativeFiles.length;
     }
@@ -188,16 +187,6 @@ public class SentimentExampleIterator implements DataSetIterator {
     }
 
     @Override
-    public int cursor() {
-        return cursor;
-    }
-
-    @Override
-    public int numExamples() {
-        return totalExamples();
-    }
-
-    @Override
     public void setPreProcessor(DataSetPreProcessor preProcessor) {
         throw new UnsupportedOperationException();
     }
@@ -209,7 +198,7 @@ public class SentimentExampleIterator implements DataSetIterator {
 
     @Override
     public boolean hasNext() {
-        return cursor < numExamples();
+        return cursor < totalExamples();
     }
 
     @Override
@@ -269,10 +258,15 @@ public class SentimentExampleIterator implements DataSetIterator {
 
         INDArray features = Nd4j.create(1, vectorSize, outputLength);
 
-        for( int j=0; j<tokens.size() && j<maxLength; j++ ){
+        int count = 0;
+        for( int j=0; j<tokens.size() && count<maxLength; j++ ){
             String token = tokens.get(j);
             INDArray vector = wordVectors.getWordVectorMatrix(token);
+            if(vector == null){
+                continue;   //Word not in word vectors
+            }
             features.put(new INDArrayIndex[]{NDArrayIndex.point(0), NDArrayIndex.all(), NDArrayIndex.point(j)}, vector);
+            count++;
         }
 
         return features;

@@ -55,7 +55,7 @@ import static org.bytedeco.javacpp.opencv_imgproc.*;
 public class HouseNumberDetection {
     private static final Logger log = LoggerFactory.getLogger(HouseNumberDetection.class);
 
-    public static void main(String[] args) throws java.lang.Exception {
+    public static void main(String[] args) throws Exception {
 
         // parameters matching the pretrained TinyYOLO model
         int width = 416;
@@ -119,7 +119,7 @@ public class HouseNumberDetection {
         } else {
             log.info("Build model...");
 
-            ComputationGraph pretrained = (ComputationGraph)new TinyYOLO().initPretrained();
+            ComputationGraph pretrained = (ComputationGraph)TinyYOLO.builder().build().initPretrained();
             INDArray priors = Nd4j.create(priorBoxes);
 
             FineTuneConfiguration fineTuneConf = new FineTuneConfiguration.Builder()
@@ -138,6 +138,7 @@ public class HouseNumberDetection {
             model = new TransferLearning.GraphBuilder(pretrained)
                     .fineTuneConfiguration(fineTuneConf)
                     .removeVertexKeepConnections("conv2d_9")
+                    .removeVertexKeepConnections("outputs")
                     .addLayer("convolution2d_9",
                             new ConvolutionLayer.Builder(1,1)
                                     .nIn(1024)
@@ -157,7 +158,6 @@ public class HouseNumberDetection {
                             "convolution2d_9")
                     .setOutputs("outputs")
                     .build();
-
             System.out.println(model.summary(InputType.convolutional(height, width, nChannels)));
 
 

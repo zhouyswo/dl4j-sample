@@ -5,7 +5,7 @@
     <parent>
         <artifactId>dl4j-spark-examples</artifactId>
         <groupId>org.deeplearning4j</groupId>
-        <version>1.0.0-alpha</version>
+        <version>1.0.0-beta2</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -13,10 +13,19 @@
 
     <properties>
         <jcommander.version>1.27</jcommander.version>
+        <azure.hadoop.version>2.7.4</azure.hadoop.version>
+        <azure.storage.version>2.0.0</azure.storage.version>
+        <spark.version>1.6.3</spark.version>
     </properties>
 
     <dependencyManagement>
     	<dependencies>
+            <dependency>
+                <!-- Force Jackson versions to match Spark. This usually only matters for Spark local, not Spark submit -->
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
     		<dependency>
     			<groupId>com.fasterxml.jackson.core</groupId>
     			<artifactId>jackson-databind</artifactId>
@@ -27,15 +36,36 @@
     			<artifactId>jackson-annotations</artifactId>
     			<version>${jackson.version}</version>
     		</dependency>
-    		<dependency>
-    			<groupId>com.fasterxml.jackson.module</groupId>
-    			<artifactId>jackson-module-scala_2.11</artifactId>
-    			<version>${jackson.version}</version>
-    		</dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.module</groupId>
+                <artifactId>jackson-module-scala_${scala.binary.version}</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.datatype</groupId>
+                <artifactId>jackson-datatype-jdk8</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.datatype</groupId>
+                <artifactId>jackson-datatype-jsr310</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <artifactId>datavec-data-codec</artifactId>
+                <groupId>org.datavec</groupId>
+                <version>1.0.0-alpha</version>
+            </dependency>
     	</dependencies>
     </dependencyManagement>
 
     <dependencies>
+
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-core_${scala.binary.version}</artifactId>
+            <version>${spark.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.nd4j</groupId>
@@ -59,6 +89,34 @@
             <groupId>com.beust</groupId>
             <artifactId>jcommander</artifactId>
             <version>${jcommander.version}</version>
+        </dependency>
+
+        <!-- Used for patent classification example -->
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.10.2</version>
+        </dependency>
+
+        <!-- Used for patent classification example -->
+        <dependency>
+            <groupId>org.deeplearning4j</groupId>
+            <artifactId>deeplearning4j-nlp</artifactId>
+            <version>${dl4j.version}</version>
+        </dependency>
+
+        <!-- Used for patent classification example -->
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-azure</artifactId>
+            <version>${azure.hadoop.version}</version>
+        </dependency>
+
+        <!-- Used for patent classification example -->
+        <dependency>
+            <groupId>com.microsoft.azure</groupId>
+            <artifactId>azure-storage</artifactId>
+            <version>${azure.storage.version}</version>
         </dependency>
 
 		<dependency>

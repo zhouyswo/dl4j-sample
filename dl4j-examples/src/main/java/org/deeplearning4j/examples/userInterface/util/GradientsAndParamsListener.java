@@ -4,9 +4,11 @@ import javafx.application.Application;
 import org.deeplearning4j.nn.api.Layer;
 import org.deeplearning4j.nn.api.Model;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
+import org.deeplearning4j.nn.workspace.LayerWorkspaceMgr;
 import org.deeplearning4j.optimize.api.TrainingListener;
 import org.nd4j.linalg.api.ndarray.INDArray;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 //import javafx.
@@ -77,10 +79,10 @@ GradientsLister: describeLayers:  miniBatchSize = 32
         System.out.println("\nGradientsListener: describeLayers:  miniBatchSize = " + network.getInputMiniBatchSize());
         for (Layer layer : network.getLayers()) {
             INDArray input = layer.input();
-            INDArray activation = layer.activate();
+            INDArray activation = layer.activate(input, true, LayerWorkspaceMgr.noWorkspaces());
             System.out.println(layer.getIndex() + ": " + layer.numParams() +
-                    " params, input shape = " + toString(input.shape())
-                    + ", activation shape = " + toString(activation.shape()) // matches the input of the next layer
+                    " params, input shape = " + Arrays.toString(input.shape())
+                    + ", activation shape = " + Arrays.toString(activation.shape()) // matches the input of the next layer
                 // + ", input mini-batch size = " + network.getInputMiniBatchSize()
                 // + ", gradient  = " + gradient // toString(gradient.gradient().shape())
             );

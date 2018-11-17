@@ -9,7 +9,6 @@ import org.datavec.api.util.ClassPathResource;
 import org.datavec.api.writable.Writable;
 import org.deeplearning4j.datasets.datavec.RecordReaderDataSetIterator;
 import org.deeplearning4j.eval.Evaluation;
-import org.deeplearning4j.eval.meta.Prediction;
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
 import org.deeplearning4j.nn.conf.layers.DenseLayer;
@@ -17,6 +16,7 @@ import org.deeplearning4j.nn.conf.layers.OutputLayer;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.nn.weights.WeightInit;
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener;
+import org.nd4j.evaluation.meta.Prediction;
 import org.nd4j.linalg.activations.Activation;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.DataSet;
@@ -109,7 +109,7 @@ public class CSVExampleEvaluationMetaData {
 
         //Evaluate the model on the test set
         Evaluation eval = new Evaluation(3);
-        INDArray output = model.output(testData.getFeatureMatrix());
+        INDArray output = model.output(testData.getFeatures());
         eval.eval(testData.getLabels(), output, testMetaData);          //Note we are passing in the test set metadata here
         System.out.println(eval.stats());
 

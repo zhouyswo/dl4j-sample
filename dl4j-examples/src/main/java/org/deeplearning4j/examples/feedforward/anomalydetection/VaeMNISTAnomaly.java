@@ -7,6 +7,7 @@ import org.deeplearning4j.nn.conf.layers.variational.BernoulliReconstructionDist
 import org.deeplearning4j.nn.conf.layers.variational.VariationalAutoencoder;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.nn.weights.WeightInit;
+import org.deeplearning4j.nn.workspace.LayerWorkspaceMgr;
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener;
 import org.nd4j.linalg.activations.Activation;
 import org.nd4j.linalg.api.ndarray.INDArray;
@@ -56,7 +57,8 @@ public class VaeMNISTAnomaly {
         Nd4j.getRandom().setSeed(rngSeed);
         MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder()
             .seed(rngSeed)
-            .updater(new Adam(0.05))
+//            .updater(new Adam(0.05))
+            .updater(new Adam(1e-3))
             .weightInit(WeightInit.XAVIER)
             .l2(1e-4)
             .list()
@@ -141,10 +143,13 @@ public class VaeMNISTAnomaly {
                 INDArray b = list.get(j).getSecond();
                 INDArray w = list.get(list.size()-j-1).getSecond();
 
-                INDArray pzxMeanBest = vae.preOutput(b);
+                LayerWorkspaceMgr mgr = LayerWorkspaceMgr.noWorkspaces();
+                vae.setInput(b, mgr);
+                INDArray pzxMeanBest = vae.preOutput(false, mgr);
                 INDArray reconstructionBest = vae.generateAtMeanGivenZ(pzxMeanBest);
 
-                INDArray pzxMeanWorst = vae.preOutput(w);
+                vae.setInput(w, mgr);
+                INDArray pzxMeanWorst = vae.preOutput(false, mgr);
                 INDArray reconstructionWorst = vae.generateAtMeanGivenZ(pzxMeanWorst);
 
                 best.add(b);

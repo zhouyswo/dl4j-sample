@@ -5,7 +5,7 @@ import org.datavec.api.io.filters.BalancedPathFilter;
 import org.datavec.api.io.labels.ParentPathLabelGenerator;
 import org.datavec.api.split.FileSplit;
 import org.datavec.api.split.InputSplit;
-import org.datavec.api.util.ArchiveUtils;
+//import org.datavec.api.util.ArchiveUtils;
 import org.datavec.image.loader.BaseImageLoader;
 import org.datavec.image.recordreader.ImageRecordReader;
 import org.deeplearning4j.datasets.datavec.RecordReaderDataSetIterator;
@@ -92,6 +92,6 @@ public class FlowerDataSetIterator {
                      new URL(DATA_URL),
                      tarFile);
          }
-         ArchiveUtils.unzipFileTo(tarFile.getAbsolutePath(), rootFile.getAbsolutePath());
+         //ArchiveUtils.unzipFileTo(tarFile.getAbsolutePath(), rootFile.getAbsolutePath());
     }
 }

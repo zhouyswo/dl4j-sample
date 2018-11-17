@@ -81,7 +81,6 @@ public class MLPMnistTwoLayerExample {
                     .nIn(100)
                     .nOut(outputNum)
                     .build())
-            .pretrain(false).backprop(true) //use backpropagation to adjust weights
             .build();
 
         MultiLayerNetwork model = new MultiLayerNetwork(conf);
@@ -99,7 +98,7 @@ public class MLPMnistTwoLayerExample {
         Evaluation eval = new Evaluation(outputNum); //create an evaluation object with 10 possible classes
         while(mnistTest.hasNext()){
             DataSet next = mnistTest.next();
-            INDArray output = model.output(next.getFeatureMatrix()); //get the networks prediction
+            INDArray output = model.output(next.getFeatures()); //get the networks prediction
             eval.eval(next.getLabels(), output); //check the prediction against the true class
         }
 

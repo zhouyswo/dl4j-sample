@@ -14,6 +14,7 @@ import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.nn.weights.WeightInit;
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener;
 import org.deeplearning4j.optimize.solvers.accumulation.EncodedGradientsAccumulator;
+import org.deeplearning4j.optimize.solvers.accumulation.encoding.threshold.FixedThresholdAlgorithm;
 import org.deeplearning4j.parallelism.ParallelWrapper;
 import org.deeplearning4j.parallelism.factory.SymmetricTrainerContext;
 import org.nd4j.jita.conf.CudaEnvironment;
@@ -152,7 +153,7 @@ public class GradientsSharingLenetMnistExample {
         Evaluation eval = new Evaluation(outputNum);
         while(mnistTest.hasNext()){
             DataSet ds = mnistTest.next();
-            INDArray output = model.output(ds.getFeatureMatrix(), false);
+            INDArray output = model.output(ds.getFeatures(), false);
             eval.eval(ds.getLabels(), output);
         }
         log.info(eval.stats());

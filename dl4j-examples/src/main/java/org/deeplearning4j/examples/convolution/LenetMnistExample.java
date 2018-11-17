@@ -115,7 +115,6 @@ public class LenetMnistExample {
             log.info(eval.stats());
             mnistTest.reset();
         }
-       // model.
         log.info("****************Example finished********************");
     }
 }

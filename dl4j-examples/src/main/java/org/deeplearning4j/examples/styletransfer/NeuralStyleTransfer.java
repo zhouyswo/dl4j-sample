@@ -4,6 +4,7 @@ import org.datavec.api.util.ClassPathResource;
 import org.datavec.image.loader.NativeImageLoader;
 import org.deeplearning4j.nn.api.Layer;
 import org.deeplearning4j.nn.graph.ComputationGraph;
+import org.deeplearning4j.nn.workspace.LayerWorkspaceMgr;
 import org.deeplearning4j.zoo.PretrainedType;
 import org.deeplearning4j.zoo.ZooModel;
 import org.deeplearning4j.zoo.model.VGG16;
@@ -163,7 +164,7 @@ public class NeuralStyleTransfer {
     private AdamUpdater createADAMUpdater() {
         AdamUpdater adamUpdater = new AdamUpdater(new Adam(LEARNING_RATE, BETA_MOMENTUM, BETA2_MOMENTUM, EPSILON));
         adamUpdater.setStateViewArray(Nd4j.zeros(1, 2 * CHANNELS * WIDTH * HEIGHT),
-            new int[]{1, CHANNELS, HEIGHT, WIDTH}, 'c',
+            new long[]{1, CHANNELS, HEIGHT, WIDTH}, 'c',
             true);
         return adamUpdater;
     }
@@ -260,9 +261,9 @@ public class NeuralStyleTransfer {
     private double styleLoss(INDArray style, INDArray combination) {
         INDArray s = gramMatrix(style);
         INDArray c = gramMatrix(combination);
-        int[] shape = style.shape();
-        int N = shape[0];
-        int M = shape[1] * shape[2];
+        long[] shape = style.shape();
+        long N = shape[0];
+        long M = shape[1] * shape[2];
         return sumOfSquaredErrors(s, c) / (4.0 * (N * N) * (M * M));
     }
 
@@ -270,7 +271,7 @@ public class NeuralStyleTransfer {
 
         for (int i = startFrom; i > 0; i--) {
             Layer layer = vgg16FineTune.getLayer(ALL_LAYERS[i]);
-            dLdANext = layer.backpropGradient(dLdANext).getSecond();
+            dLdANext = layer.backpropGradient(dLdANext, LayerWorkspaceMgr.noWorkspaces()).getSecond();
         }
         return dLdANext;
     }
@@ -333,7 +334,7 @@ public class NeuralStyleTransfer {
     }
 
     private INDArray flatten(INDArray x) {
-        int[] shape = x.shape();
+        long[] shape = x.shape();
         return x.reshape(shape[0] * shape[1], shape[2] * shape[3]);
     }
 
@@ -374,7 +375,7 @@ public class NeuralStyleTransfer {
     }
 
     private ComputationGraph loadModel() throws IOException {
-        ZooModel zooModel = new VGG16();
+        ZooModel zooModel = VGG16.builder().build();
         ComputationGraph vgg16 = (ComputationGraph) zooModel.initPretrained(PretrainedType.IMAGENET);
         vgg16.initGradientsView();
         log.info(vgg16.summary());
@@ -400,11 +401,11 @@ public class NeuralStyleTransfer {
      * @return BufferedImage
      */
     private BufferedImage imageFromINDArray(INDArray array) {
-        int[] shape = array.shape();
+        long[] shape = array.shape();
 
-        int height = shape[2];
-        int width = shape[3];
-        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        long height = shape[2];
+        long width = shape[3];
+        BufferedImage image = new BufferedImage((int)width, (int)height, BufferedImage.TYPE_INT_RGB);
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 int red = array.getInt(0, 2, y, x);

@@ -103,7 +103,7 @@ public class VideoClassificationExample {
                         .gradientNormalizationThreshold(10)
                         .updater(new AdaGrad(0.01))
                         .build())
-                .layer(4, new GravesLSTM.Builder()
+                .layer(4, new LSTM.Builder()
                         .activation(Activation.SOFTSIGN)
                         .nIn(50)
                         .nOut(50)
@@ -123,7 +123,6 @@ public class VideoClassificationExample {
                 .inputPreProcessor(0, new RnnToCnnPreProcessor(V_HEIGHT, V_WIDTH, 3))
                 .inputPreProcessor(3, new CnnToFeedForwardPreProcessor(7, 7, 10))
                 .inputPreProcessor(4, new FeedForwardToRnnPreProcessor())
-                .pretrain(false).backprop(true)
                 .backpropType(BackpropType.TruncatedBPTT)
                 .tBPTTForwardLength(V_NFRAMES / 5)
                 .tBPTTBackwardLength(V_NFRAMES / 5)
@@ -185,7 +184,7 @@ public class VideoClassificationExample {
         DataSetIterator testData = getDataSetIterator(outputDirectory, testStartIdx, nExamples, 10);
         while(testData.hasNext()) {
             DataSet dsTest = testData.next();
-            INDArray predicted = net.output(dsTest.getFeatureMatrix(), false);
+            INDArray predicted = net.output(dsTest.getFeatures(), false);
             INDArray actual = dsTest.getLabels();
             evaluation.evalTimeSeries(actual, predicted);
         }

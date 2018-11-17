@@ -4,10 +4,12 @@ import javafx.application.Application;
 import org.deeplearning4j.nn.api.Layer;
 import org.deeplearning4j.nn.api.Model;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
+import org.deeplearning4j.nn.workspace.LayerWorkspaceMgr;
 import org.deeplearning4j.optimize.api.IterationListener;
 import org.deeplearning4j.optimize.api.TrainingListener;
 import org.nd4j.linalg.api.ndarray.INDArray;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 //import javafx.
@@ -17,7 +19,7 @@ import java.util.Map;
  *
  * @author Donald A. Smith
  */
-public class ActivationsListener implements IterationListener {
+public class ActivationsListener extends IterationListener {
     private boolean invoked=false;
     private final MultiLayerNetwork network;
     private final int sampleSizePerLayer;
@@ -74,12 +76,12 @@ public class ActivationsListener implements IterationListener {
         System.out.println("\nActivationsListener layers:");
         for(Layer layer:network.getLayers()) {
             INDArray input= layer.input();
-            INDArray activation = layer.activate();
+            INDArray activation = layer.activate(input, false, LayerWorkspaceMgr.noWorkspaces());
             //Gradient gradient=layer.gradient(); //null
             System.out.println(layer.getIndex() + ": " + layer.numParams() +
-                    " params, input shape = " + toString(input.shape())
+                    " params, input shape = " + Arrays.toString(input.shape())
                 //    + ", input rank = " + input.rank()  // You can infer this from the shape above
-                    + ", activation shape = " + toString(activation.shape()) // matches the input of the next layer
+                    + ", activation shape = " + Arrays.toString(activation.shape()) // matches the input of the next layer
                 // + ", input mini-batch size = " + network.getInputMiniBatchSize()
                 // + ", gradient  = " + gradient // toString(gradient.gradient().shape())
             );

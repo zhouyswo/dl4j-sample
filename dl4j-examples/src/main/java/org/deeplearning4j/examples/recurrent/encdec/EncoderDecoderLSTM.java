@@ -1,43 +1,22 @@
 package org.deeplearning4j.examples.recurrent.encdec;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Random;
-import java.util.Scanner;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import java.util.concurrent.TimeUnit;
-
 import org.apache.commons.lang3.ArrayUtils;
 import org.deeplearning4j.nn.api.Layer;
-import org.deeplearning4j.nn.api.OptimizationAlgorithm;
 import org.deeplearning4j.nn.conf.BackpropType;
 import org.deeplearning4j.nn.conf.ComputationGraphConfiguration.GraphBuilder;
 import org.deeplearning4j.nn.conf.GradientNormalization;
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
-import org.deeplearning4j.nn.conf.Updater;
 import org.deeplearning4j.nn.conf.graph.MergeVertex;
 import org.deeplearning4j.nn.conf.graph.rnn.DuplicateToTimeSeriesVertex;
 import org.deeplearning4j.nn.conf.graph.rnn.LastTimeStepVertex;
 import org.deeplearning4j.nn.conf.inputs.InputType;
 import org.deeplearning4j.nn.conf.layers.EmbeddingLayer;
-import org.deeplearning4j.nn.conf.layers.GravesLSTM;
+import org.deeplearning4j.nn.conf.layers.LSTM;
 import org.deeplearning4j.nn.conf.layers.RnnOutputLayer;
 import org.deeplearning4j.nn.graph.ComputationGraph;
 import org.deeplearning4j.nn.graph.vertex.GraphVertex;
 import org.deeplearning4j.nn.weights.WeightInit;
+import org.deeplearning4j.nn.workspace.LayerWorkspaceMgr;
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener;
 import org.deeplearning4j.util.ModelSerializer;
 import org.nd4j.linalg.activations.Activation;
@@ -45,6 +24,15 @@ import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.learning.config.RmsProp;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
+
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -168,7 +156,7 @@ public class EncoderDecoderLSTM {
 
     /**
      * The contents of the corpus. This is a list of sentences (each word of the
-     * sentence is denoted by a {@link java.lang.Double}).
+     * sentence is denoted by a {@link Double}).
      */
     private final List<List<Double>> corpus = new ArrayList<>();
 
@@ -189,7 +177,7 @@ public class EncoderDecoderLSTM {
     private static final int ROW_SIZE = 40; // maximum line length in tokens
 
     /**
-     * The delay between invocations of {@link java.lang.System#gc()} in
+     * The delay between invocations of {@link System#gc()} in
      * milliseconds. If VRAM is being exhausted, reduce this value. Increase
      * this value to yield better performance.
      */
@@ -261,7 +249,7 @@ public class EncoderDecoderLSTM {
                     .build(),
                 "inputLine")
             .addLayer("encoder",
-                new GravesLSTM.Builder()
+                new LSTM.Builder()
                     .nIn(EMBEDDING_WIDTH)
                     .nOut(HIDDEN_LAYER_WIDTH)
                     .activation(Activation.TANH)
@@ -271,7 +259,7 @@ public class EncoderDecoderLSTM {
             .addVertex("dup", new DuplicateToTimeSeriesVertex("decoderInput"), "thoughtVector")
             .addVertex("merge", new MergeVertex(), "decoderInput", "dup")
             .addLayer("decoder",
-                new GravesLSTM.Builder()
+                new LSTM.Builder()
                     .nIn(dict.size() + HIDDEN_LAYER_WIDTH)
                     .nOut(HIDDEN_LAYER_WIDTH)
                     .activation(Activation.TANH)
@@ -387,17 +375,18 @@ public class EncoderDecoderLSTM {
         double[] decodeArr = new double[dict.size()];
         decodeArr[2] = 1;
         INDArray decode = Nd4j.create(decodeArr, new int[] { 1, dict.size(), 1 });
-        net.feedForward(new INDArray[] { in, decode }, false);
-        org.deeplearning4j.nn.layers.recurrent.GravesLSTM decoder = (org.deeplearning4j.nn.layers.recurrent.GravesLSTM) net
+        net.feedForward(new INDArray[] { in, decode }, false, false);
+        org.deeplearning4j.nn.layers.recurrent.LSTM decoder = (org.deeplearning4j.nn.layers.recurrent.LSTM) net
                 .getLayer("decoder");
         Layer output = net.getLayer("output");
         GraphVertex mergeVertex = net.getVertex("merge");
         INDArray thoughtVector = mergeVertex.getInputs()[1];
+        LayerWorkspaceMgr mgr = LayerWorkspaceMgr.noWorkspaces();
         for (int row = 0; row < ROW_SIZE; ++row) {
             mergeVertex.setInputs(decode, thoughtVector);
-            INDArray merged = mergeVertex.doForward(false);
-            INDArray activateDec = decoder.rnnTimeStep(merged);
-            INDArray out = output.activate(activateDec, false);
+            INDArray merged = mergeVertex.doForward(false, mgr);
+            INDArray activateDec = decoder.rnnTimeStep(merged, mgr);
+            INDArray out = output.activate(activateDec, false, mgr);
             double d = rnd.nextDouble();
             double sum = 0.0;
             int idx = -1;

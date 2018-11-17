@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  *
  * The input layer has input dimension of numRows*numColumns where these variables indicate the
  * number of vertical and horizontal pixels in the image. This layer uses a rectified linear unit
- * (relu) activation function. The weights for this layer are initialized by us ing Xavier initialization
+ * (relu) activation function. The weights for this layer are initialized by using Xavier initialization
  * (https://prateekvjoshi.com/2016/03/29/understanding-xavier-initialization-in-deep-neural-networks/)
  * to avoid having a steep learning curve. This layer will have 1000 output signals to the hidden layer.
  *
@@ -73,7 +73,6 @@ public class MLPMnistSingleLayerExample {
                         .activation(Activation.SOFTMAX)
                         .weightInit(WeightInit.XAVIER)
                         .build())
-                .pretrain(false).backprop(true) //use backpropagation to adjust weights
                 .build();
 
         MultiLayerNetwork model = new MultiLayerNetwork(conf);
@@ -91,7 +90,7 @@ public class MLPMnistSingleLayerExample {
         Evaluation eval = new Evaluation(outputNum); //create an evaluation object with 10 possible classes
         while(mnistTest.hasNext()){
             DataSet next = mnistTest.next();
-            INDArray output = model.output(next.getFeatureMatrix()); //get the networks prediction
+            INDArray output = model.output(next.getFeatures()); //get the networks prediction
             eval.eval(next.getLabels(), output); //check the prediction against the true class
         }
 
